@@ -23,13 +23,19 @@ class value(object):
         self.__units = value
 
     def __call__(self):
-        print(self.value, self.units)
         return self
     
     def __add__(self,b):
         if b.SIUnits != self.SIUnits:
             print('Error: Dimensions do not agree.')
         return value(self.SIValue+b.SIValue, self.SIUnits)
+
+    def __sub__(self,b):
+        if type(b) != value:
+            raise TypeError('Subtraction not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(value)})
+        if b.SIUnits != self.SIUnits:
+            print('Error: Dimensions do not agree.')
+        return value(self.SIValue-b.SIValue, self.SIUnits)
 
     @property
     def SIValue(self):
@@ -43,8 +49,6 @@ class value(object):
                 unit = things[0]
             except IndexError:
                 exponent = 1
-                if exponent == int(exponent):
-                    exponent = int(exponent)
                 unit = element
             conversion = self.conversion_factors[unit]
             factor *= conversion**exponent
@@ -57,6 +61,8 @@ class value(object):
             try:
                 things = element.split('^')
                 exponent = float(things[1])
+                if exponent == int(exponent):
+                    exponent = int(exponent)
                 unit = self.conversion_units[things[0]]
                 self.__SIUnits.append(str(unit)+'^'+str(exponent))
             except IndexError:
@@ -67,7 +73,7 @@ class value(object):
 
     @property
     def SI(self):
-        print(self.SIValue, self.SIUnits)
+        return [self.SIValue, self.SIUnits]
 
     def convert(self):
         self.conversion_units = {
@@ -104,9 +110,14 @@ def test():
     a = value('100', ['mi','h^-1'])
     b = value('10', ['m','s^-1'])
     c = value('90', ['m','s^-2'])
-    print((a+b).SI)
-    print((b+a).SI)
-    print((a+c).SI)
+
+
+    print('a', a.SI)
+    print('b', b.SI)
+    print('addition', (a+b).SI)
+    print('subtraction', (a-b).SI)
+
+    a-10
 
 if __name__ == '__main__':
     test()
