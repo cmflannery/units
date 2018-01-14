@@ -10,8 +10,8 @@ class value(object):
         I.e. all values in numerator with positive and negative
         exponents indicated with a carrot.
         """
-        self.value = float(value)
-        self.units = units
+        self.__value = float(value)
+        self.__units = units
         self.convert()
 
     @property
@@ -26,6 +26,8 @@ class value(object):
         return self
     
     def __add__(self,b):
+        if type(b) != value:
+            raise TypeError('Addition not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(value)})
         if b.SIUnits != self.SIUnits:
             print('Error: Dimensions do not agree.')
         return value(self.SIValue+b.SIValue, self.SIUnits)
