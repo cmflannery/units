@@ -54,7 +54,7 @@ class value(object):
                 unit = element
             conversion = self.conversion_factors[unit]
             factor *= conversion**exponent
-        return self.value * factor
+        return self.__value * factor
 
     @property
     def SIUnits(self):
@@ -102,6 +102,7 @@ class value(object):
             'N':1
         }
 
+    
 
 class array(object):
     def __init__(self, values, units):
@@ -113,7 +114,7 @@ def test():
     b = value('10', ['m','s^-1'])
     c = value('90', ['m','s^-2'])
 
-
+    c+b
     print('a', a.SI)
     print('b', b.SI)
     print('addition', (a+b).SI)
