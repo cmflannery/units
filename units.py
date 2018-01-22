@@ -29,15 +29,20 @@ class value(object):
         if type(b) != value:
             raise TypeError('Addition not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(value)})
         if b.SIUnits != self.SIUnits:
-            raise DimsDoNotAgreeError('Dimensions do not agree for input units %(1)s, %(2)s' % {'1': b.SIUnits, '2': self.SIUnits})
+            raise DimsDoNotAgreeError('Addition not supported for units %(1)s, %(2)s' % {'1': b.SIUnits, '2': self.SIUnits})
         return value(self.SIValue+b.SIValue, self.SIUnits)
 
     def __sub__(self,b):
         if type(b) != value:
             raise TypeError('Subtraction not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(value)})
         if b.SIUnits != self.SIUnits:
-            raise DimsDoNotAgreeError('Dimensions do not agree for input units %(1)s, %(2)s' % {'1': b.SIUnits, '2': self.SIUnits})
+            raise DimsDoNotAgreeError('Subtraction not supported for units %(1)s, %(2)s' % {'1': b.SIUnits, '2': self.SIUnits})
         return value(self.SIValue-b.SIValue, self.SIUnits)
+
+    def __mul__(self,b):
+        if type(b) != value:
+            raise TypeError('Multiplication not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(value)})
+        return value(self.SIValue * b.SIValue, self.SIUnits)
 
     @property
     def SIValue(self):
@@ -129,9 +134,11 @@ def test():
     print('b', b.SI)
     print('addition', (a+b).SI)
     print('subtraction', (a-b).SI)
-    print('c+b', (c+b).SI) # raises DimsDoNotAgreeError
+    print('multiplication', (a*b).SI)
 
-    a-10
+    # Error cases
+    # print('c+b', (c+b).SI) # raises DimsDoNotAgreeError
+    # a-10
 
 if __name__ == '__main__':
     test()
