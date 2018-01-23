@@ -71,8 +71,53 @@ class Value(object):
             raise TypeError('Power operation not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
         return Value(self.SIValue**b, self.units_pow(self.SIUnits, b))
 
+    def __neg__(self):
+        return Value(-(self.SIValue), self.SIUnits)
+
     def __abs__(self):
         return Value(abs(self.SIValue), self.SIUnits)
+
+    def __lt__(self,b):
+        if type(b) != Value:
+            raise TypeError('< not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
+        if b.SIUnits != self.SIUnits:
+            raise DimsDoNotAgreeError('< not supported for units %(1)s, %(2)s' % {'1': b.SIUnits, '2': self.SIUnits})
+        return (self.SIValue < b.SIValue)
+
+    def __le__(self,b):
+        if type(b) != Value:
+            raise TypeError('<= not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
+        if b.SIUnits != self.SIUnits:
+            raise DimsDoNotAgreeError('<= not supported for units %(1)s, %(2)s' % {'1': b.SIUnits, '2': self.SIUnits})
+        return (self.SIValue <= b.SIValue)
+
+    def __eq__(self,b):
+        if type(b) != Value:
+            raise TypeError('== not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
+        if b.SIUnits != self.SIUnits:
+            raise DimsDoNotAgreeError('== not supported for units %(1)s, %(2)s' % {'1': b.SIUnits, '2': self.SIUnits})
+        return (self.SIValue == b.SIValue)
+
+    def __ne__(self,b):
+        if type(b) != Value:
+            raise TypeError('!= not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
+        if b.SIUnits != self.SIUnits:
+            raise DimsDoNotAgreeError('!= not supported for units %(1)s, %(2)s' % {'1': b.SIUnits, '2': self.SIUnits})
+        return (self.SIValue != b.SIValue)
+
+    def __ge__(self,b):
+        if type(b) != Value:
+            raise TypeError('>= not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
+        if b.SIUnits != self.SIUnits:
+            raise DimsDoNotAgreeError('>= not supported for units %(1)s, %(2)s' % {'1': b.SIUnits, '2': self.SIUnits})
+        return (self.SIValue >= b.SIValue)
+
+    def __gt__(self,b):
+        if type(b) != Value:
+            raise TypeError('> not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
+        if b.SIUnits != self.SIUnits:
+            raise DimsDoNotAgreeError('> not supported for units %(1)s, %(2)s' % {'1': b.SIUnits, '2': self.SIUnits})
+        return (self.SIValue > b.SIValue)
 
     def units_pow(self, units, power):
         powed_units = []
