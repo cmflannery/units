@@ -2,7 +2,7 @@ from __future__ import print_function, division, absolute_import
 import numpy as numpy
 
 
-class value(object):
+class Value(object):
     def __init__(self, value, units):
         """
         Units expected as follows:
@@ -26,23 +26,49 @@ class value(object):
         return self
 
     def __add__(self,b):
-        if type(b) != value:
-            raise TypeError('Addition not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(value)})
+        if type(b) != Value:
+            raise TypeError('Addition not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
         if b.SIUnits != self.SIUnits:
             raise DimsDoNotAgreeError('Addition not supported for units %(1)s, %(2)s' % {'1': b.SIUnits, '2': self.SIUnits})
-        return value(self.SIValue+b.SIValue, self.SIUnits)
+        return Value(self.SIValue+b.SIValue, self.SIUnits)
 
     def __sub__(self,b):
-        if type(b) != value:
-            raise TypeError('Subtraction not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(value)})
+        if type(b) != Value:
+            raise TypeError('Subtraction not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
         if b.SIUnits != self.SIUnits:
             raise DimsDoNotAgreeError('Subtraction not supported for units %(1)s, %(2)s' % {'1': b.SIUnits, '2': self.SIUnits})
-        return value(self.SIValue-b.SIValue, self.SIUnits)
+        return Value(self.SIValue-b.SIValue, self.SIUnits)
 
-    def __mul__(self,b):
-        if type(b) != value:
-            raise TypeError('Multiplication not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(value)})
-        return value(self.SIValue * b.SIValue, self.SIUnits)
+    def __mul__(self,b):            
+        if (type(b) != Value) and type(Value) != int and type(Value) != float:
+            raise TypeError('Multiplication not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
+        if type(b) == Value:
+            units = self.SIUnits + b.SIUnits
+            return Value(self.SIValue*b.SIValue, self.unit_reducer(units))
+        else:
+            return Value(self.SIValue*b, self.SIUnits)
+ 
+    def unit_reducer(self, units):
+        if type(units) != list:
+            return units
+        unit_dict = {}
+        for element in units:
+            things = element.split('^')
+            try:
+                unit = things[0]
+                exponent = float(things[1])
+            except IndexError:
+                unit = element
+                exponent = 1
+            try:
+                unit_dict[unit] += exponent
+            except KeyError:
+                unit_dict[unit] = exponent
+        reduced_units = []
+        for thing in unit_dict:
+            unit = thing + '^' + str(unit_dict[thing])
+            reduced_units.append(unit)
+        return reduced_units
 
     @property
     def SIValue(self):
@@ -126,9 +152,9 @@ class DimsDoNotAgreeError(Exception):
 
 
 def test():
-    a = value('100', ['mi','h^-1'])
-    b = value('10', ['m','s^-1'])
-    c = value('90', ['m','s^-2'])
+    a = Value('100', ['mi','h^-1'])
+    b = Value('10', ['m','s^-1'])
+    c = Value('90', ['m','s^-2'])
 
     print('a', a.SI)
     print('b', b.SI)
