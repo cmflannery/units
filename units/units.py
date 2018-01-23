@@ -1,7 +1,7 @@
 """ units.py provides unit conversion and handling functionality for
 scientific python applications """
 from __future__ import print_function, division, absolute_import
-from units import conversions
+
 
 class Value(object):
     def __init__(self, value, units):
@@ -11,6 +11,7 @@ class Value(object):
         I.e. all values in numerator with positive and negative
         exponents indicated with a carrot.
         """
+        self.conversions()
         self.__value = float(value)
         if type(units) != list:
             units = [units]
@@ -193,7 +194,7 @@ class Value(object):
             except IndexError:
                 exponent = 1
                 unit = element
-            conversion = conversions.conversion_factors[unit]
+            conversion = self.conversion_factors[unit]
             factor *= conversion**exponent
         return self.__value * factor
 
@@ -206,11 +207,11 @@ class Value(object):
                 exponent = float(things[1])
                 if exponent == int(exponent):
                     exponent = int(exponent)
-                unit = conversions.conversion_units[things[0]]
+                unit = self.conversion_units[things[0]]
                 self.__SIUnits.append(str(unit)+'^'+str(exponent))
             except IndexError:
                 exponent = 1
-                unit = conversions.conversion_units[element]
+                unit = self.conversion_units[element]
                 self.__SIUnits.append(str(unit))
         return self.__SIUnits
 
@@ -231,7 +232,7 @@ class Value(object):
             except IndexError:
                 exponent = 1
                 unit = element
-            conversion = conversions.conversion_factors_IM[unit]
+            conversion = self.conversion_factors_IM[unit]
             factor *= conversion**exponent
         return self.SIValue * factor
 
@@ -244,17 +245,63 @@ class Value(object):
                 exponent = float(things[1])
                 if exponent == int(exponent):
                     exponent = int(exponent)
-                unit = conversions.conversion_units_IM[things[0]]
+                unit = self.conversion_units_IM[things[0]]
                 self.__IMUnits.append(str(unit)+'^'+str(exponent))
             except IndexError:
                 exponent = 1
-                unit = conversions.conversion_units_IM[element]
+                unit = self.conversion_units_IM[element]
                 self.__IMUnits.append(str(unit))
         return self.__IMUnits
 
     @property
     def IM(self):
         return [self.IMValue, self.IMUnits]
+
+    def conversions(self):
+        conversion_units = {
+            'm': 'm',
+            'km': 'm',
+            'in': 'm',
+            'ft': 'm',
+            'yd': 'm',
+            'mi': 'm',
+            'kg': 'kg',
+            'g': 'kg',
+            'lbm': 'kg',
+            'slug': 'kg',
+            'N': 'N',
+            's': 's',
+            'min': 's',
+            'h': 's'
+        }
+        conversion_factors = {
+            'm': 1.0,
+            'km': 1000,
+            'in': 0.0254,
+            'ft': 0.3048,
+            'yd': 0.9144,
+            'mi': 1609.34,
+            'kg': 1.0,
+            'g': 0.001,
+            'lbm': 0.4536,
+            'slug': 14.5939,
+            'N': 1.0,
+            's': 1.0,
+            'min': 60,
+            'h': 3600
+        }
+        conversion_units_IM = {
+            'm': 'ft',
+            'kg': 'lbm',
+            'N': 'lbf',
+            's': 's'
+        }
+        conversion_factors_IM = {
+            'm': 3.2808,
+            'kg': 2.2046,
+            'N': 0.2248,
+            's': 1.0
+        }
 
 class array(object):
     def __init__(self, values, units):
