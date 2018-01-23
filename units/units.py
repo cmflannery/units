@@ -1,7 +1,7 @@
 """ units.py provides unit conversion and handling functionality for
 scientific python applications """
 from __future__ import print_function, division, absolute_import
-
+import conversions
 
 class Value(object):
     def __init__(self, value, units):
@@ -15,7 +15,6 @@ class Value(object):
         if type(units) != list:
             units = [units]
         self.__units = units
-        self.convert()
 
     @property
     def value(self):
@@ -55,6 +54,8 @@ class Value(object):
         else:
             return Value(self.SIValue*b, self.SIUnits)
 
+    def __rmul__(self,b):
+        return self.__mul__(b)
 
     def __truediv__(self,b):
         if (type(b) != Value) and type(b) != int and type(b) != float:
@@ -134,7 +135,6 @@ class Value(object):
                 removed_units.append(unit + '^' + str(exponent))
         return removed_units
 
-
     @property
     def SIValue(self):
         factor = 1
@@ -148,7 +148,7 @@ class Value(object):
             except IndexError:
                 exponent = 1
                 unit = element
-            conversion = self.conversion_factors[unit]
+            conversion = conversions.conversion_factors[unit]
             factor *= conversion**exponent
         return self.__value * factor
 
@@ -161,11 +161,11 @@ class Value(object):
                 exponent = float(things[1])
                 if exponent == int(exponent):
                     exponent = int(exponent)
-                unit = self.conversion_units[things[0]]
+                unit = conversions.conversion_units[things[0]]
                 self.__SIUnits.append(str(unit)+'^'+str(exponent))
             except IndexError:
                 exponent = 1
-                unit = self.conversion_units[element]
+                unit = conversions.conversion_units[element]
                 self.__SIUnits.append(str(unit))
         return self.__SIUnits
 
@@ -186,7 +186,7 @@ class Value(object):
             except IndexError:
                 exponent = 1
                 unit = element
-            conversion = self.conversion_factors_IM[unit]
+            conversion = conversions.conversion_factors_IM[unit]
             factor *= conversion**exponent
         return self.SIValue * factor
 
@@ -199,11 +199,11 @@ class Value(object):
                 exponent = float(things[1])
                 if exponent == int(exponent):
                     exponent = int(exponent)
-                unit = self.conversion_units_IM[things[0]]
+                unit = conversions.conversion_units_IM[things[0]]
                 self.__IMUnits.append(str(unit)+'^'+str(exponent))
             except IndexError:
                 exponent = 1
-                unit = self.conversion_units_IM[element]
+                unit = conversions.conversion_units_IM[element]
                 self.__IMUnits.append(str(unit))
         return self.__IMUnits
 
@@ -211,47 +211,9 @@ class Value(object):
     def IM(self):
         return [self.IMValue, self.IMUnits]
 
-    def convert(self):
-        self.conversion_units = {
-            'm': 'm',
-            'km': 'm',
-            'in': 'm',
-            'ft': 'm',
-            'yd': 'm',
-            'mi': 'm',
-            's': 's',
-            'min': 's',
-            'h': 's',
-            'N': 'N'
-        }
-        self.conversion_factors = {
-            'm': 1.0,
-            'km': 1000,
-            'in': 0.0254,
-            'ft': 0.3048,
-            'yd': 0.9144,
-            'mi': 1609.34,
-            's': 1,
-            'min': 60,
-            'h': 3600,
-            'N':1
-        }
-        self.conversion_units_IM = {
-            'm': 'ft',
-            's': 's',
-            'N': 'lbf'
-        }
-        self.conversion_factors_IM = {
-            'm': 3.2808,
-            's': 1,
-            'N': 0.22481
-        }
-
-
 class array(object):
     def __init__(self, values, units):
         pass
-
 
 class DimsDoNotAgreeError(Exception):
     """Exception raised for errors in the input when addition and subration
@@ -263,7 +225,6 @@ class DimsDoNotAgreeError(Exception):
 
     def __init__(self, message):
         Exception.__init__(self, message)
-
 
 def test():
     a = Value('100', ['mi','h^-1'])
