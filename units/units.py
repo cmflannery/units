@@ -1,5 +1,6 @@
+""" units.py provides unit conversion and handling functionality for
+scientific python applications """
 from __future__ import print_function, division, absolute_import
-import numpy as numpy
 
 
 class Value(object):
