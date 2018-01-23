@@ -258,7 +258,7 @@ class Value(object):
         return [self.IMValue, self.IMUnits]
 
     def conversions(self):
-        conversion_units = {
+        self.conversion_units = {
             'm': 'm',
             'km': 'm',
             'in': 'm',
@@ -274,7 +274,7 @@ class Value(object):
             'min': 's',
             'h': 's'
         }
-        conversion_factors = {
+        self.conversion_factors = {
             'm': 1.0,
             'km': 1000,
             'in': 0.0254,
@@ -290,13 +290,13 @@ class Value(object):
             'min': 60,
             'h': 3600
         }
-        conversion_units_IM = {
+        self.conversion_units_IM = {
             'm': 'ft',
             'kg': 'lbm',
             'N': 'lbf',
             's': 's'
         }
-        conversion_factors_IM = {
+        self.conversion_factors_IM = {
             'm': 3.2808,
             'kg': 2.2046,
             'N': 0.2248,
