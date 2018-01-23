@@ -18,6 +18,10 @@ class Value(object):
         self.convert()
 
     @property
+    def value(self):
+        return self.__value
+
+    @property
     def units(self):
         return self.__units
 
@@ -42,7 +46,7 @@ class Value(object):
             raise DimsDoNotAgreeError('Subtraction not supported for units %(1)s, %(2)s' % {'1': b.SIUnits, '2': self.SIUnits})
         return Value(self.SIValue-b.SIValue, self.SIUnits)
 
-    def __mul__(self,b):            
+    def __mul__(self,b):
         if (type(b) != Value) and type(b) != int and type(b) != float:
             raise TypeError('Multiplication not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
         if type(b) == Value:
@@ -169,6 +173,44 @@ class Value(object):
     def SI(self):
         return [self.SIValue, self.SIUnits]
 
+    @property
+    def IMValue(self):
+        factor = 1
+        for element in self.SIUnits:
+            try:
+                things = element.split('^')
+                exponent = float(things[1])
+                if exponent == int(exponent):
+                    exponent = int(exponent)
+                unit = things[0]
+            except IndexError:
+                exponent = 1
+                unit = element
+            conversion = self.conversion_factors_IM[unit]
+            factor *= conversion**exponent
+        return self.SIValue * factor
+
+    @property
+    def IMUnits(self):
+        self.__IMUnits = []
+        for element in self.SIUnits:
+            try:
+                things = element.split('^')
+                exponent = float(things[1])
+                if exponent == int(exponent):
+                    exponent = int(exponent)
+                unit = self.conversion_units_IM[things[0]]
+                self.__IMUnits.append(str(unit)+'^'+str(exponent))
+            except IndexError:
+                exponent = 1
+                unit = self.conversion_units_IM[element]
+                self.__IMUnits.append(str(unit))
+        return self.__IMUnits
+
+    @property
+    def IM(self):
+        return [self.IMValue, self.IMUnits]
+
     def convert(self):
         self.conversion_units = {
             'm': 'm',
@@ -184,8 +226,8 @@ class Value(object):
         }
         self.conversion_factors = {
             'm': 1.0,
-            'km': 0.001,
-            'in': 0.254,
+            'km': 1000,
+            'in': 0.0254,
             'ft': 0.3048,
             'yd': 0.9144,
             'mi': 1609.34,
@@ -193,6 +235,16 @@ class Value(object):
             'min': 60,
             'h': 3600,
             'N':1
+        }
+        self.conversion_units_IM = {
+            'm': 'ft',
+            's': 's',
+            'N': 'lbf'
+        }
+        self.conversion_factors_IM = {
+            'm': 3.2808,
+            's': 1,
+            'N': 0.22481
         }
 
 
