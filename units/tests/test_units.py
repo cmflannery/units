@@ -8,96 +8,98 @@ import pytest
 
 class TestOperations(object):
     def test_basic_SI(self):
-        a = Value(1, ['m','s^-1'])
-        b = Value(2, ['m','s^-1'])
+        a = 1; a_val = Value(a, ['m','s^-1'])
+        b = 2; b_val = Value(b, ['m','s^-1'])
         c = 2
+        d = 2
         # Addition
-        assert (a+b).SIValue == (1+2)
-        assert (a+b).SIUnits == ['m','s^-1']
+        assert (a_val+b_val).SIValue == (a+b)
+        assert (a_val+b_val).SIUnits == ['m','s^-1']
         # Subration
-        assert (b-a).SIValue == (2-1)
-        assert (b-a).SIUnits == ['m','s^-1']
+        assert (b_val-a_val).SIValue == (b-a)
+        assert (b_val-a_val).SIUnits == ['m','s^-1']
         # Value multiplication
-        assert (a*b).SIValue == (1*2)
-        assert (a*b).SIUnits == ['m^2','s^-2']
+        assert (a_val*b_val).SIValue == (a*b)
+        assert (a_val*b_val).SIUnits == ['m^2','s^-2']
         # Scalar multiplication
-        assert (a*c).SIValue == (1*2)
-        assert (a*c).SIUnits == ['m','s^-1']
+        assert (a_val*c).SIValue == (a*c)
+        assert (a_val*c).SIUnits == ['m','s^-1']
         # Right scalar multiplication
-        assert (c*a).SIValue == (2*1)
-        assert (c*a).SIUnits == ['m','s^-1']
+        assert (c*a_val).SIValue == (c*a)
+        assert (c*a_val).SIUnits == ['m','s^-1']
         # Value division
-        assert (a/b).SIValue == (1/2)
-        assert (a/b).SIUnits == []
+        assert (a_val/b_val).SIValue == (a/b)
+        assert (a_val/b_val).SIUnits == []
         # Scalar division
-        assert (a/c).SIValue == (1/2)
-        assert (a/c).SIUnits == ['m','s^-1']
+        assert (a_val/c).SIValue == (a/c)
+        assert (a_val/c).SIUnits == ['m','s^-1']
         # Right scalar division
-        # assert (c/a).SIValue == (2/1)
-        # assert (c/a).SIUnits == ['m^-1','s']
+        # assert (c/a_val).SIValue == (c/a)
+        # assert (c/a_val).SIUnits == ['m^-1','s']
         # Exponent
-        assert (b**c).SIValue == (2**2)
-        assert (b**c).SIUnits == ['m^2','s^-2']
+        assert (b_val**d).SIValue == (b**d)
+        assert (b_val**d).SIUnits == ['m^'+str(d),'s^-'+str(d)]
         # Exponent with decimal fraction
-        assert (b**(0.5)).SIValue == (2**(0.5))
-        assert (b**(0.5)).SIUnits == ['m^0.5','s^-0.5']
+        assert (b_val**(0.5)).SIValue == (b**(0.5))
+        assert (b_val**(0.5)).SIUnits == ['m^0.5','s^-0.5']
         # Exponent with fraction
-        assert (b**(1/2)).SIValue == (2**(1/2))
-        assert (b**(1/2)).SIUnits == ['m^0.5','s^-0.5']
+        assert (b_val**(1/2)).SIValue == (b**(1/2))
+        assert (b_val**(1/2)).SIUnits == ['m^0.5','s^-0.5']
 
     def test_basic_IM(self):
-        a = Value(1, ['ft','s^-1'])
-        b = Value(2, ['ft','s^-1'])
+        a = 1; a_val = Value(a, ['ft','s^-1'])
+        b = 2; b_val = Value(b, ['ft','s^-1'])
         c = 2
+        d = 2
         # Addition
-        assert abs((a+b).IMValue - (1+2)) < 1e-4
-        assert (a+b).IMUnits == ['ft','s^-1']
+        assert abs((a_val+b_val).IMValue - (a+b)) < 1e-4
+        assert (a_val+b_val).IMUnits == ['ft','s^-1']
         # Subration
-        assert abs((b-a).IMValue - (2-1)) < 1e-4
-        assert (b-a).IMUnits == ['ft','s^-1']
+        assert abs((b_val-a_val).IMValue - (b-a)) < 1e-4
+        assert (b_val-a_val).IMUnits == ['ft','s^-1']
         # Value multiplication
-        assert abs((a*b).IMValue - (1*2)) < 1e-4
-        assert (a*b).IMUnits == ['ft^2','s^-2']
+        assert abs((a_val*b_val).IMValue - (a*b)) < 1e-4
+        assert (a_val*b_val).IMUnits == ['ft^2','s^-2']
         # Scalar multiplication
-        assert abs((a*c).IMValue - (1*2)) < 1e-4
-        assert (a*c).IMUnits == ['ft','s^-1']
+        assert abs((a_val*c).IMValue - (a*c)) < 1e-4
+        assert (a_val*c).IMUnits == ['ft','s^-1']
         # Right scalar multiplication
-        assert abs((c*a).IMValue - (2*1)) < 1e-4
-        assert (c*a).IMUnits == ['ft','s^-1']
+        assert abs((c*a_val).IMValue - (c*a)) < 1e-4
+        assert (c*a_val).IMUnits == ['ft','s^-1']
         # Value division
-        assert abs((a/b).IMValue - (1/2)) < 1e-4
-        assert (a/b).IMUnits == []
+        assert abs((a_val/b_val).IMValue - (a/b)) < 1e-4
+        assert (a_val/b_val).IMUnits == []
         # Scalar division
-        assert abs((a/c).IMValue - (1/2)) < 1e-4
-        assert (a/c).IMUnits == ['ft','s^-1']
+        assert abs((a_val/c).IMValue - (a/c)) < 1e-4
+        assert (a_val/c).IMUnits == ['ft','s^-1']
         # Right scalar division
-        # assert abs((c/a).IMValue - (2/1)) < 1e-4
-        # assert (c/a).IMUnits == ['ft^-1','s']
+        # assert abs((c/a_val).IMValue - (c/a)) < 1e-4
+        # assert (c/a_val).IMUnits == ['ft^-1','s']
         # Exponent
-        assert abs((b**c).IMValue - (2**2)) < 1e-4
-        assert (b**c).IMUnits == ['ft^2','s^-2']
+        assert abs((b_val**d).IMValue - (b**d)) < 1e-4
+        assert (b_val**d).IMUnits == ['ft^'+str(d),'s^-'+str(d)]
         # Exponent with decimal fraction
-        assert abs((b**0.5).IMValue - (2**0.5)) < 1e-4
-        assert (b**(0.5)).IMUnits == ['ft^0.5','s^-0.5']
+        assert abs((b_val**0.5).IMValue - (b**0.5)) < 1e-4
+        assert (b_val**(0.5)).IMUnits == ['ft^0.5','s^-0.5']
         # Exponent with fraction
-        assert abs((b**(1/2)).IMValue - (2**(1/2))) < 1e-4
-        assert (b**(1/2)).IMUnits == ['ft^0.5','s^-0.5']
+        assert abs((b_val**(1/2)).IMValue - (b**(1/2))) < 1e-4
+        assert (b_val**(1/2)).IMUnits == ['ft^0.5','s^-0.5']
 
     def test_logic(self):
-        a = Value(1, ['m','s^-1'])
-        b = Value(2, ['m','s^-1'])
-        assert (a<b) == True
-        assert (a<a) == False
-        assert (a<=b) == True
-        assert (a<=a) == True
-        assert (a==b) == False
-        assert (a==a) == True
-        assert (a!=b) == True
-        assert (a!=a) == False
-        assert (a>=b) == False
-        assert (a>=a) == True
-        assert (a>b) == False
-        assert (a>a) == False
+        a = 1; a_val = Value(a, ['m','s^-1'])
+        b = 2; b_val = Value(b, ['m','s^-1'])
+        assert (a_val<b_val) == (a<b)
+        assert (a_val<a_val) == (a<a)
+        assert (a_val<=b_val) == (a<=b)
+        assert (a_val<=a_val) == (a<=a)
+        assert (a_val==b_val) == (a==b)
+        assert (a_val==a_val) == (a==a)
+        assert (a_val!=b_val) == (a!=b)
+        assert (a_val!=a_val) == (a!=a)
+        assert (a_val>=b_val) == (a>=b)
+        assert (a_val>=a_val) == (a>=a)
+        assert (a_val>b_val) == (a>b)
+        assert (a_val>a_val) == (a>a)
 
     def test_expectedTypeError(self):
         a = Value(1, ['m','s^-1'])
