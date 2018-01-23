@@ -47,7 +47,7 @@ class Value(object):
         return Value(self.SIValue-b.SIValue, self.SIUnits)
 
     def __mul__(self,b):
-        if (type(b) != Value) and type(b) != int and type(b) != float:
+        if (type(b) != Value) and (type(b) != int) and (type(b) != float):
             raise TypeError('Multiplication not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
         if type(b) == Value:
             units = self.SIUnits + b.SIUnits
@@ -59,7 +59,7 @@ class Value(object):
         return self.__mul__(b)
 
     def __truediv__(self,b):
-        if (type(b) != Value) and type(b) != int and type(b) != float:
+        if (type(b) != Value) and (type(b) != int) and (type(b) != float):
             raise TypeError('Division not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
         if type(b) == Value:
             units = self.SIUnits + self.unit_inverter(b.SIUnits)
@@ -318,29 +318,29 @@ class DimsDoNotAgreeError(Exception):
     def __init__(self, message):
         Exception.__init__(self, message)
 
-def test():
-    a = Value('100', ['mi','h^-1'])
-    b = Value('10', ['m','s^-1'])
-    c = Value('90', ['m','s^-2'])
-    d = 2
-    e = Value('-100', ['m','s^-2'])
-
-    print('a', a.SI)
-    print('b', b.SI)
-    print('addition', (a+b).SI)
-    print('subtraction', (a-b).SI)
-    print('multiplication', (a*b).SI)
-    print('multiplication', (a*d).SI)
-    print('division', (a/b).SI)
-    print('division', (a/d).SI)
-    print('power', (a**d).SI)
-    print('abs', (abs(e)).SI)
-
-    print('a', a.IM)
-    print('b', b.IM)
-    print('addition', (a+b).IM)
-    print('multiplication', (a*b).IM)
-    print('division', (a/b).IM)
+# def test():
+    # a = Value('100', ['mi','h^-1'])
+    # b = Value('10', ['m','s^-1'])
+    # c = Value('90', ['m','s^-2'])
+    # d = 2
+    # e = Value('-100', ['m','s^-2'])
+    #
+    # print('a', a.SI)
+    # print('b', b.SI)
+    # print('addition', (a+b).SI)
+    # print('subtraction', (a-b).SI)
+    # print('multiplication', (a*b).SI)
+    # print('multiplication', (a*d).SI)
+    # print('division', (a/b).SI)
+    # print('division', (a/d).SI)
+    # print('power', (a**d).SI)
+    # print('abs', (abs(e)).SI)
+    #
+    # print('a', a.IM)
+    # print('b', b.IM)
+    # print('addition', (a+b).IM)
+    # print('multiplication', (a*b).IM)
+    # print('division', (a/b).IM)
 
 
     # Error cases
@@ -348,4 +348,5 @@ def test():
     # a-10
 
 if __name__ == '__main__':
-    test()
+    # test()
+    pass
