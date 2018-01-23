@@ -11,6 +11,8 @@ class Value(object):
         exponents indicated with a carrot.
         """
         self.__value = float(value)
+        if type(units) != list:
+            units = [units]
         self.__units = units
         self.convert()
 
@@ -40,17 +42,38 @@ class Value(object):
         return Value(self.SIValue-b.SIValue, self.SIUnits)
 
     def __mul__(self,b):            
-        if (type(b) != Value) and type(Value) != int and type(Value) != float:
+        if (type(b) != Value) and type(b) != int and type(b) != float:
             raise TypeError('Multiplication not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
         if type(b) == Value:
             units = self.SIUnits + b.SIUnits
             return Value(self.SIValue*b.SIValue, self.unit_reducer(units))
         else:
             return Value(self.SIValue*b, self.SIUnits)
- 
+
+
+    def __truediv__(self,b):
+        if (type(b) != Value) and type(b) != int and type(b) != float:
+            raise TypeError('Division not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
+        if type(b) == Value:
+            units = self.SIUnits + self.unit_inverter(b.SIUnits)
+            return Value(self.SIValue/b.SIValue, self.unit_reducer(units))
+        else:
+            return Value(self.SIValue/b, self.SIUnits)
+
+    def unit_inverter(self, units):
+        inverted_units = []
+        for element in units:
+            things = element.split('^')
+            try:
+                unit = things[0]
+                exponent = -float(things[1])
+            except IndexError:
+                unit = element
+                exponent = -1
+            inverted_units.append(unit + '^' + str(exponent))
+        return inverted_units
+
     def unit_reducer(self, units):
-        if type(units) != list:
-            return units
         unit_dict = {}
         for element in units:
             things = element.split('^')
@@ -68,7 +91,23 @@ class Value(object):
         for thing in unit_dict:
             unit = thing + '^' + str(unit_dict[thing])
             reduced_units.append(unit)
+        reduced_units = self.remove_zero_units(reduced_units)
         return reduced_units
+
+    def remove_zero_units(self, units):
+        removed_units = []
+        for element in units:
+            things = element.split('^')
+            try:
+                unit = things[0]
+                exponent = float(things[1])
+            except IndexError:
+                unit = element
+                exponent = 1
+            if exponent != 0:
+                removed_units.append(unit + '^' + str(exponent))
+        return removed_units
+
 
     @property
     def SIValue(self):
@@ -155,12 +194,19 @@ def test():
     a = Value('100', ['mi','h^-1'])
     b = Value('10', ['m','s^-1'])
     c = Value('90', ['m','s^-2'])
+    d = 10
 
     print('a', a.SI)
     print('b', b.SI)
     print('addition', (a+b).SI)
     print('subtraction', (a-b).SI)
     print('multiplication', (a*b).SI)
+    print('multiplication', (a*d).SI)
+    print('division', (a/b).SI)
+    print('division', (a/d).SI)
+
+
+
 
     # Error cases
     # print('c+b', (c+b).SI) # raises DimsDoNotAgreeError
