@@ -283,6 +283,13 @@ def test():
     print('power', (a**d).SI)
     print('abs', (abs(e)).SI)
 
+    print('a', a.IM)
+    print('b', b.IM)
+    print('addition', (a+b).IM)
+    print('multiplication', (a*b).IM)
+    print('division', (a/b).IM)
+
+
     # Error cases
     # print('c+b', (c+b).SI) # raises DimsDoNotAgreeError
     # a-10
