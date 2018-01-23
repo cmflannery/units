@@ -60,6 +60,27 @@ class Value(object):
         else:
             return Value(self.SIValue/b, self.SIUnits)
 
+    def __pow__(self,b):
+        if (type(b) != int) and (type(b) != float):
+            raise TypeError('Power operation not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
+        return Value(self.SIValue**b, self.units_pow(self.SIUnits, b))
+
+    def __abs__(self):
+        return Value(abs(self.SIValue), self.SIUnits)
+
+    def units_pow(self, units, power):
+        powed_units = []
+        for element in units:
+            things = element.split('^')
+            try:
+                unit = things[0]
+                exponent = float(things[1]) * power
+            except IndexError:
+                unit = element
+                exponent = 1 * power
+            powed_units.append(unit + '^' + str(exponent))
+        return powed_units
+
     def unit_inverter(self, units):
         inverted_units = []
         for element in units:
@@ -157,7 +178,8 @@ class Value(object):
             'mi': 'm',
             's': 's',
             'min': 's',
-            'h': 's'
+            'h': 's',
+            'N': 'N'
         }
         self.conversion_factors = {
             'm': 1.0,
@@ -194,7 +216,8 @@ def test():
     a = Value('100', ['mi','h^-1'])
     b = Value('10', ['m','s^-1'])
     c = Value('90', ['m','s^-2'])
-    d = 10
+    d = 2
+    e = Value('-100', ['m','s^-2'])
 
     print('a', a.SI)
     print('b', b.SI)
@@ -204,9 +227,8 @@ def test():
     print('multiplication', (a*d).SI)
     print('division', (a/b).SI)
     print('division', (a/d).SI)
-
-
-
+    print('power', (a**d).SI)
+    print('abs', (abs(e)).SI)
 
     # Error cases
     # print('c+b', (c+b).SI) # raises DimsDoNotAgreeError
