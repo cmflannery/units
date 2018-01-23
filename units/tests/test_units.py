@@ -12,6 +12,12 @@ class TestOperations(object):
         b = 2; b_val = Value(b, ['m','s^-1'])
         c = 2
         d = 2
+        # Negation
+        assert (-a_val).SIValue == (-a)
+        assert (-a_val).SIUnits == ['m','s^-1']
+        # Absolute value
+        assert abs(-a_val).SIValue == abs(-a)
+        assert abs(-a_val).SIUnits == ['m','s^-1']
         # Addition
         assert (a_val+b_val).SIValue == (a+b)
         assert (a_val+b_val).SIUnits == ['m','s^-1']
@@ -101,6 +107,7 @@ class TestOperations(object):
         assert (a_val>b_val) == (a>b)
         assert (a_val>a_val) == (a>a)
 
+class TestExpectedErrors(object):
     def test_expectedTypeError(self):
         a = Value(1, ['m','s^-1'])
         b = Value(2, ['m','s^-1'])
