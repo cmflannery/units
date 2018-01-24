@@ -1,6 +1,7 @@
 """ units.py provides unit conversion and handling functionality for
 scientific python applications """
 from __future__ import print_function, division, absolute_import
+import numpy as np
 
 
 class Value(object):
@@ -47,7 +48,7 @@ class Value(object):
         return Value(self.SIValue-b.SIValue, self.SIUnits)
 
     def __mul__(self,b):
-        if (type(b) != Value) and type(b) != int and type(b) != float:
+        if type(b) != Value and type(b) != int and type(b) != np.float32 and type(b) != np.float64:
             raise TypeError('Multiplication not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
         if type(b) == Value:
             units = self.SIUnits + b.SIUnits
@@ -59,7 +60,7 @@ class Value(object):
         return self.__mul__(b)
 
     def __truediv__(self,b):
-        if (type(b) != Value) and type(b) != int and type(b) != float:
+        if type(b) != Value and type(b) != int and type(b) != np.float32 and type(b) != np.float64:
             raise TypeError('Division not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
         if type(b) == Value:
             units = self.SIUnits + self.unit_inverter(b.SIUnits)
@@ -68,7 +69,7 @@ class Value(object):
             return Value(self.SIValue/b, self.SIUnits)
 
     def __pow__(self,b):
-        if (type(b) != int) and (type(b) != float):
+        if type(b) != int and type(b) != float and type(b) != np.float32 and type(b) != np.float64:
             raise TypeError('Power operation not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
         return Value(self.SIValue**b, self.units_pow(self.SIUnits, b))
 
@@ -272,7 +273,8 @@ class Value(object):
             'N': 'N',
             's': 's',
             'min': 's',
-            'h': 's'
+            'h': 's',
+            'Pa':'Pa'
         }
         self.conversion_factors = {
             'm': 1.0,
@@ -288,7 +290,8 @@ class Value(object):
             'N': 1.0,
             's': 1.0,
             'min': 60,
-            'h': 3600
+            'h': 3600,
+            'Pa':1
         }
         self.conversion_units_IM = {
             'm': 'ft',
