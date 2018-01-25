@@ -3,8 +3,18 @@ from units import *
 import pytest
 
 # add openrocketengine to env. variables so we can import openrocketengine here
-# def test_Value():
-#     thing = Value(100,'kg')
+def test_Value():
+    thing = Value(100,'kg')
+
+def test_units_sorting():
+    a = Value(10, ['s','m^-2','kg^10','ft','h^6','N^-0.01','psi'])
+    b = Value(10, ['h^6','N^-0.01','psi','ft','s','m^-2','kg^10'])
+    c = Value(10, ['m','s^-2'])
+    d = Value(10, ['h^-2','mi'])
+    assert a.units == b.units
+    assert a.SIUnits == b.SIUnits
+    assert a.IMUnits == b.IMUnits
+    assert (c*d).SIUnits == ['m^2','s^-4']
 
 class TestOperations(object):
     def test_basic_SI(self):
