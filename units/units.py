@@ -16,7 +16,7 @@ class Value(object):
         self.__value = float(value)
         if type(units) != list:
             units = [units]
-        self.__units = units
+        self.__units = self.units_sorter(units)
 
     @property
     def value(self):
@@ -182,6 +182,20 @@ class Value(object):
                 removed_units.append(unit + '^' + str(exponent))
         return removed_units
 
+    def units_sorter(self, units):
+        # sorted_units = sorted(units)
+        sorted_units = sorted(units, key=self.units_sorter_key)
+        return sorted_units
+
+    def units_sorter_key(self, unit):
+        try:
+            things = unit.split('^')
+            unit = things[0]
+        except IndexError:
+            pass
+        comp = self.comparision_dict[unit]
+        return comp
+
     @property
     def SIValue(self):
         factor = 1
@@ -260,50 +274,75 @@ class Value(object):
 
     def conversions(self):
         self.conversion_units = {
+            'kg': 'kg',
+            'g': 'kg',
+            'lbm': 'kg',
+            'slug': 'kg',
             'm': 'm',
             'km': 'm',
             'in': 'm',
             'ft': 'm',
             'yd': 'm',
             'mi': 'm',
-            'kg': 'kg',
-            'g': 'kg',
-            'lbm': 'kg',
-            'slug': 'kg',
-            'N': 'N',
             's': 's',
             'min': 's',
             'h': 's',
-            'Pa':'Pa'
+            'N': 'N',
+            'lbf': 'N',
+            'Pa': 'Pa',
+            'psi': 'Pa'
         }
         self.conversion_factors = {
+            'kg': 1.0,
+            'g': 0.001,
+            'lbm': 0.4536,
+            'slug': 14.5939,
             'm': 1.0,
             'km': 1000,
             'in': 0.0254,
             'ft': 0.3048,
             'yd': 0.9144,
             'mi': 1609.34,
-            'kg': 1.0,
-            'g': 0.001,
-            'lbm': 0.4536,
-            'slug': 14.5939,
-            'N': 1.0,
             's': 1.0,
             'min': 60,
             'h': 3600,
-            'Pa':1
+            'N': 1.0,
+            'lbf': 4.44822,
+            'Pa': 1.0,
+            'psi': 6894.76
         }
         self.conversion_units_IM = {
-            'm': 'ft',
             'kg': 'lbm',
+            'm': 'ft',
+            's': 's',
             'N': 'lbf',
-            's': 's'
+            'Pa': 'psi'
         }
         self.conversion_factors_IM = {
-            'm': 3.2808,
             'kg': 2.2046,
+            'm': 3.2808,
+            's': 1.0,
             'N': 0.2248,
-            's': 1.0
+            'Pa': 0.000145038
+        }
+        self.comparision_dict = {
+            'kg': 0,
+            'g': 1,
+            'lbm': 2,
+            'slug': 3,
+            'm': 4,
+            'km': 5,
+            'in': 6,
+            'ft': 7,
+            'yd': 8,
+            'mi': 9,
+            's': 10,
+            'min': 11,
+            'h': 12,
+            'N': 13,
+            'lbf': 14,
+            'Pa': 15,
+            'psi': 16
         }
 
 class array(object):
