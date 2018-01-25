@@ -62,6 +62,9 @@ class Value(object):
     def __truediv__(self,b):
         if type(b) != Value and type(b) != int and type(b) != np.float32 and type(b) != np.float64:
             raise TypeError('Division not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
+        if type(b) == Value:
+            units = self.SIUnits + self.unit_inverter(b.SIUnits)
+            return Value(self.SIValue/b.SIValue, self.unit_reducer(units))
         else:
             return Value(self.SIValue/b, self.SIUnits)
 
