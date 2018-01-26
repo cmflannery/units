@@ -189,7 +189,6 @@ class Value(object):
         return removed_units
 
     def units_sorted(self, units):
-        # simplified_units = units
         simplified_units = self.units_simplify(units)
         sorted_units = sorted(simplified_units, key=self.units_sorted_key)
         return sorted_units
