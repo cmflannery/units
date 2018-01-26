@@ -11,10 +11,12 @@ def test_units_sorting():
     b = Value(10, ['h^6','N^-0.01','psi','ft','s','m^-2','kg^10'])
     c = Value(10, ['m','s^-2'])
     d = Value(10, ['h^-2','mi'])
+    e = Value(10, ['m^-1/2', 'm^5'])
     assert a.units == b.units
     assert a.SIUnits == b.SIUnits
     assert a.IMUnits == b.IMUnits
     assert (c*d).SIUnits == ['m^2','s^-4']
+    assert e.IMUnits == ['ft^4.5']
 
 class TestOperations(object):
     def test_basic_SI(self):
@@ -65,40 +67,41 @@ class TestOperations(object):
     def test_basic_IM(self):
         a = 1; a_val = Value(a, ['ft','s^-1'])
         b = 2; b_val = Value(b, ['ft','s^-1'])
+        error = a*1e-4 + b*1e-4
         c = 2
         d = 2
         # Addition
-        assert abs((a_val+b_val).IMValue - (a+b)) < 1e-4
+        assert abs((a_val+b_val).IMValue - (a+b)) < error
         assert (a_val+b_val).IMUnits == ['ft','s^-1']
         # Subration
-        assert abs((b_val-a_val).IMValue - (b-a)) < 1e-4
+        assert abs((b_val-a_val).IMValue - (b-a)) < error
         assert (b_val-a_val).IMUnits == ['ft','s^-1']
         # Value multiplication
-        assert abs((a_val*b_val).IMValue - (a*b)) < 1e-4
+        assert abs((a_val*b_val).IMValue - (a*b)) < error
         assert (a_val*b_val).IMUnits == ['ft^2','s^-2']
         # Scalar multiplication
-        assert abs((a_val*c).IMValue - (a*c)) < 1e-4
+        assert abs((a_val*c).IMValue - (a*c)) < error
         assert (a_val*c).IMUnits == ['ft','s^-1']
         # Right scalar multiplication
-        assert abs((c*a_val).IMValue - (c*a)) < 1e-4
+        assert abs((c*a_val).IMValue - (c*a)) < error
         assert (c*a_val).IMUnits == ['ft','s^-1']
         # Value division
-        assert abs((a_val/b_val).IMValue - (a/b)) < 1e-4
+        assert abs((a_val/b_val).IMValue - (a/b)) < error
         assert (a_val/b_val).IMUnits == []
         # Scalar division
-        assert abs((a_val/c).IMValue - (a/c)) < 1e-4
+        assert abs((a_val/c).IMValue - (a/c)) < error
         assert (a_val/c).IMUnits == ['ft','s^-1']
         # Right scalar division
-        # assert abs((c/a_val).IMValue - (c/a)) < 1e-4
+        # assert abs((c/a_val).IMValue - (c/a)) < error
         # assert (c/a_val).IMUnits == ['ft^-1','s']
         # Exponent
-        assert abs((b_val**d).IMValue - (b**d)) < 1e-4
+        assert abs((b_val**d).IMValue - (b**d)) < b*1e-4
         assert (b_val**d).IMUnits == ['ft^'+str(d),'s^-'+str(d)]
         # Exponent with decimal fraction
-        assert abs((b_val**0.5).IMValue - (b**0.5)) < 1e-4
+        assert abs((b_val**0.5).IMValue - (b**0.5)) < b*1e-4
         assert (b_val**(0.5)).IMUnits == ['ft^0.5','s^-0.5']
         # Exponent with fraction
-        assert abs((b_val**(1/2)).IMValue - (b**(1/2))) < 1e-4
+        assert abs((b_val**(1/2)).IMValue - (b**(1/2))) < b*1e-4
         assert (b_val**(1/2)).IMUnits == ['ft^0.5','s^-0.5']
 
     def test_logic(self):

@@ -16,7 +16,7 @@ class Value(object):
         self.__value = float(value)
         if type(units) != list:
             units = [units]
-        self.__units = self.units_sorter(units)
+        self.__units = self.units_sorted(units)
 
     @property
     def value(self):
@@ -52,7 +52,7 @@ class Value(object):
             raise TypeError('Multiplication not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
         if type(b) == Value:
             units = self.SIUnits + b.SIUnits
-            return Value(self.SIValue*b.SIValue, self.unit_reducer(units))
+            return Value(self.SIValue*b.SIValue, self.units_simplify(units))
         else:
             return Value(self.SIValue*b, self.SIUnits)
 
@@ -63,8 +63,8 @@ class Value(object):
         if type(b) != Value and type(b) != int and type(b) != np.float32 and type(b) != np.float64:
             raise TypeError('Division not supported for types %(1)s, %(2)s' % {'1': type(b), '2': type(Value)})
         if type(b) == Value:
-            units = self.SIUnits + self.unit_inverter(b.SIUnits)
-            return Value(self.SIValue/b.SIValue, self.unit_reducer(units))
+            units = self.SIUnits + self.units_inverter(b.SIUnits)
+            return Value(self.SIValue/b.SIValue, self.units_simplify(units))
         else:
             return Value(self.SIValue/b, self.SIUnits)
 
@@ -134,7 +134,7 @@ class Value(object):
             powed_units.append(unit + '^' + str(exponent))
         return powed_units
 
-    def unit_inverter(self, units):
+    def units_inverter(self, units):
         inverted_units = []
         for element in units:
             things = element.split('^')
@@ -147,13 +147,17 @@ class Value(object):
             inverted_units.append(unit + '^' + str(exponent))
         return inverted_units
 
-    def unit_reducer(self, units):
+    def units_simplify(self, units):
         unit_dict = {}
         for element in units:
             things = element.split('^')
             try:
                 unit = things[0]
-                exponent = float(things[1])
+                try:
+                    exponent = float(things[1])
+                except ValueError: # Catch fractional inputs like m^1/2
+                    things2 = things[1].split('/')
+                    exponent = float(things2[0])/float(things2[1])
             except IndexError:
                 unit = element
                 exponent = 1
@@ -165,10 +169,10 @@ class Value(object):
         for thing in unit_dict:
             unit = thing + '^' + str(unit_dict[thing])
             reduced_units.append(unit)
-        reduced_units = self.remove_zero_units(reduced_units)
+        reduced_units = self.units_simplify_power(reduced_units)
         return reduced_units
 
-    def remove_zero_units(self, units):
+    def units_simplify_power(self, units):
         removed_units = []
         for element in units:
             things = element.split('^')
@@ -178,16 +182,19 @@ class Value(object):
             except IndexError:
                 unit = element
                 exponent = 1
-            if exponent != 0:
+            if exponent == 1:
+                removed_units.append(unit)
+            elif exponent != 0:
                 removed_units.append(unit + '^' + str(exponent))
         return removed_units
 
-    def units_sorter(self, units):
-        # sorted_units = sorted(units)
-        sorted_units = sorted(units, key=self.units_sorter_key)
+    def units_sorted(self, units):
+        # simplified_units = units
+        simplified_units = self.units_simplify(units)
+        sorted_units = sorted(simplified_units, key=self.units_sorted_key)
         return sorted_units
 
-    def units_sorter_key(self, unit):
+    def units_sorted_key(self, unit):
         try:
             things = unit.split('^')
             unit = things[0]
@@ -237,7 +244,7 @@ class Value(object):
     @property
     def IMValue(self):
         factor = 1
-        for element in self.SIUnits:
+        for element in self.units:
             try:
                 things = element.split('^')
                 exponent = float(things[1])
@@ -249,12 +256,12 @@ class Value(object):
                 unit = element
             conversion = self.conversion_factors_IM[unit]
             factor *= conversion**exponent
-        return self.SIValue * factor
+        return self.__value * factor
 
     @property
     def IMUnits(self):
         self.__IMUnits = []
-        for element in self.SIUnits:
+        for element in self.units:
             try:
                 things = element.split('^')
                 exponent = float(things[1])
@@ -302,28 +309,52 @@ class Value(object):
             'in': 0.0254,
             'ft': 0.3048,
             'yd': 0.9144,
-            'mi': 1609.34,
+            'mi': 1609.3440,
             's': 1.0,
             'min': 60,
             'h': 3600,
             'N': 1.0,
-            'lbf': 4.44822,
+            'lbf': 4.4482,
             'Pa': 1.0,
-            'psi': 6894.76
+            'psi': 6894.7573
         }
         self.conversion_units_IM = {
             'kg': 'lbm',
+            'g': 'lbm',
+            'lbm': 'lbm',
+            'slug': 'lbm',
             'm': 'ft',
+            'km': 'ft',
+            'in': 'ft',
+            'ft': 'ft',
+            'yd': 'ft',
+            'mi': 'ft',
             's': 's',
+            'min': 's',
+            'h': 's',
             'N': 'lbf',
-            'Pa': 'psi'
+            'lbf': 'lbf',
+            'Pa': 'psi',
+            'psi': 'psi'
         }
         self.conversion_factors_IM = {
             'kg': 2.2046,
+            'g': 0.002205,
+            'lbm': 1.0,
+            'slug': 32.1740,
             'm': 3.2808,
+            'km': 3280.8399,
+            'in': 1/12,
+            'ft': 1.0,
+            'yd': 3.0,
+            'mi': 5280.0,
             's': 1.0,
+            'min': 60,
+            'h': 3600,
             'N': 0.2248,
-            'Pa': 0.000145038
+            'lbf': 1.0,
+            'Pa': 0.0001450,
+            'psi': 1.0
         }
         self.comparision_dict = {
             'kg': 0,
