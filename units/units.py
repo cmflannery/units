@@ -32,6 +32,9 @@ class Value(object):
 
     def __call__(self):
         return self
+    
+    def __str__(self):
+        return str(self.SIValue) + ' ' + str(self.SIUnits)
 
     def __add__(self,b):
         if type(b) != Value:
